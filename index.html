@@ -238,11 +238,21 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-letter {
       font-family: 'Playfair Display', serif;
       font-weight: 600;
       font-size: 1.1rem;
       color: var(--bg-primary);
-      flex-shrink: 0;
     }
 
     .avatar.official {
@@ -490,7 +500,7 @@
         id: 1,
         author: "OpenClaw",
         handle: "@openclaw",
-        avatar: "O",
+        avatar: "https://pbs.twimg.com/profile_images/2017100664984186880/orbYx-3U_200x200.jpg",
         isOfficial: true,
         summary: "2026.2.26 版本发布：外部密钥管理等",
         content: "OpenClaw 2026.2.26 External Secrets Management (openclaw secrets) ACP thread-bound agents (first-class runtime) Codex WebSocket-first transport Android app improvements Agent routing CLI (bind/unbind) 11 security hardening fixes",
@@ -507,7 +517,7 @@
         id: 3,
         author: "OpenClaw",
         handle: "@openclaw",
-        avatar: "O",
+        avatar: "https://pbs.twimg.com/profile_images/2017100664984186880/orbYx-3U_200x200.jpg",
         isOfficial: true,
         summary: "2026.2.25 版本：心跳功能恢复",
         content: "OpenClaw 2026.2.25 Heartbeat DM delivery restored Subagent delivery overhaul Slack thread session fixes Reaction auth across all channels Security hardening",
@@ -524,7 +534,7 @@
         id: 4,
         author: "OpenClaw",
         handle: "@openclaw",
-        avatar: "O",
+        avatar: "https://pbs.twimg.com/profile_images/2017100664984186880/orbYx-3U_200x200.jpg",
         isOfficial: true,
         summary: "ACP 代理可在线程中生成代码框架",
         content: "\"run this in Codex\" — just say it. OpenClaw ACP agents spawn coding harnesses in threads, with lifecycle controls and coalesced replies.",
@@ -541,7 +551,7 @@
         id: 5,
         author: "OpenClaw",
         handle: "@openclaw",
-        avatar: "O",
+        avatar: "https://pbs.twimg.com/profile_images/2017100664984186880/orbYx-3U_200x200.jpg",
         isOfficial: true,
         summary: "密钥管理：审计、配置、应用、重新加载",
         content: "Your API keys don't belong in plaintext config files. openclaw secrets audit → configure → apply → reload. ENV, file, exec providers.",
@@ -562,7 +572,7 @@
         id: 101,
         author: "klöss",
         handle: "@kloss_xyz",
-        avatar: "k",
+        avatar: "https://pbs.twimg.com/profile_images/1999391201162633219/zKXohr6m_200x200.jpg",
         isOfficial: false,
         summary: "正在更新 OpenClaw",
         content: "@openclaw updating now",
@@ -579,7 +589,7 @@
         id: 102,
         author: "Maria Derchi Russo",
         handle: "@MariaDerchi",
-        avatar: "M",
+        avatar: "https://pbs.twimg.com/profile_images/1667608098889154560/eVNsXeQq_200x200.jpg",
         isOfficial: false,
         summary: "OpenClaw Miami 聚会圆满成功",
         content: "Packed house at tonight's @OpenClawMiami Meetup 🦞 great to see what the community is building! #openclaw",
@@ -596,7 +606,7 @@
         id: 104,
         author: "Alexander Temerev",
         handle: "@AryehDubois",
-        avatar: "A",
+        avatar: "https://pbs.twimg.com/profile_images/2014280163706421248/QYTfAecA_200x200.jpg",
         isOfficial: false,
         summary: "试用体验：令人印象深刻",
         content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right. Persistent memory, persona onboarding, comms integration, heartbeats. The end result is AWESOME.",
@@ -613,7 +623,7 @@
         id: 105,
         author: "Mark Jaquith",
         handle: "@markjaquith",
-        avatar: "M",
+        avatar: "https://pbs.twimg.com/profile_images/1667608098889154560/eVNsXeQq_200x200.jpg",
         isOfficial: false,
         summary: "如同将各部分整合在一起的飞跃",
         content: "@openclaw feels like that kind of \"just had to glue all the parts together\" leap forward. Incredible experience.",
@@ -634,7 +644,7 @@
         id: 201,
         author: "klöss",
         handle: "@kloss_xyz",
-        avatar: "k",
+        avatar: "https://pbs.twimg.com/profile_images/1999391201162633219/zKXohr6m_200x200.jpg",
         isOfficial: false,
         summary: "正在更新 OpenClaw",
         content: "@openclaw updating now",
@@ -651,7 +661,7 @@
         id: 202,
         author: "Maria Derchi Russo",
         handle: "@MariaDerchi",
-        avatar: "M",
+        avatar: "https://pbs.twimg.com/profile_images/1667608098889154560/eVNsXeQq_200x200.jpg",
         isOfficial: false,
         summary: "OpenClaw Miami 聚会圆满成功",
         content: "Packed house at tonight's @OpenClawMiami Meetup 🦞 great to see what the community is building! #openclaw",
@@ -668,7 +678,7 @@
         id: 204,
         author: "Alexander Temerev",
         handle: "@AryehDubois",
-        avatar: "A",
+        avatar: "https://pbs.twimg.com/profile_images/2014280163706421248/QYTfAecA_200x200.jpg",
         isOfficial: false,
         summary: "试用体验：令人印象深刻",
         content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right.",
@@ -685,7 +695,7 @@
         id: 205,
         author: "Mark Jaquith",
         handle: "@markjaquith",
-        avatar: "M",
+        avatar: "https://pbs.twimg.com/profile_images/1667608098889154560/eVNsXeQq_200x200.jpg",
         isOfficial: false,
         summary: "如同将各部分整合在一起的飞跃",
         content: "@openclaw feels like that kind of \"just had to glue all the parts together\" leap forward. Incredible experience.",
@@ -720,6 +730,11 @@
       const verifiedIcon = post.isOfficial ?
         '<svg class="verified-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '';
 
+      // Check if avatar is a URL or a letter
+      const avatarHTML = post.avatar.startsWith('http') ?
+        `<img src="${post.avatar}" alt="${post.author}" class="avatar-img">` :
+        `<span class="avatar-letter">${post.avatar}</span>`;
+
       const cardImage = getCardImage(post);
       const fallbackImage = 'https://pbs.twimg.com/profile_banners/1995710751097659392/1769751337/600x200';
       const cardImageHTML = cardImage ?
@@ -730,7 +745,7 @@
         ${cardImageHTML}
         <div class="card-content">
           <div class="card-header">
-            <div class="${avatarClass}">${post.avatar}</div>
+            <div class="${avatarClass}">${avatarHTML}</div>
             <div class="author-info">
               <div class="author-name">${post.author} ${verifiedIcon}</div>
               <div class="author-handle">${post.handle}</div>
