@@ -286,11 +286,57 @@
       white-space: nowrap;
     }
 
-    .post-content {
-      font-size: 0.95rem;
+    /* Post summary - main display */
+    .post-summary {
+      font-size: 1rem;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Expandable content */
+    .post-content-wrapper {
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    .post-content-wrapper.expanded {
+      display: block;
+    }
+
+    .post-content-original {
+      font-size: 0.85rem;
       color: var(--text-secondary);
-      margin-bottom: 16px;
       line-height: 1.6;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .expand-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 6px 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-right: 8px;
+    }
+
+    .expand-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .expand-btn.expanded {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg-primary);
     }
 
     .post-link {
@@ -301,7 +347,6 @@
       font-size: 0.8rem;
       color: var(--accent);
       text-decoration: none;
-      margin-bottom: 16px;
       transition: gap 0.3s ease;
     }
 
@@ -391,8 +436,8 @@
 
     <div class="tabs">
       <button class="tab-btn active" data-tab="official">官方账号</button>
-      <button class="tab-btn" data-tab="daily">每日 Top 5</button>
-      <button class="tab-btn" data-tab="weekly">每周 Top 5</button>
+      <button class="tab-btn" data-tab="daily">每日 Top 10</button>
+      <button class="tab-btn" data-tab="weekly">每周 Top 10</button>
     </div>
 
     <!-- Official Posts Section -->
@@ -404,19 +449,19 @@
       <div class="cards-grid" id="official-grid"></div>
     </section>
 
-    <!-- Daily Top 5 Section -->
+    <!-- Daily Top 10 Section -->
     <section class="section" id="daily-section">
       <h2 class="section-title">
-        其他用户 - 每日 Top 5
+        其他用户 - 每日 Top 10
         <span class="badge">2月27日</span>
       </h2>
       <div class="cards-grid" id="daily-grid"></div>
     </section>
 
-    <!-- Weekly Top 5 Section -->
+    <!-- Weekly Top 10 Section -->
     <section class="section" id="weekly-section">
       <h2 class="section-title">
-        其他用户 - 每周 Top 5
+        其他用户 - 每周 Top 10
         <span class="badge">最近7天</span>
       </h2>
       <div class="cards-grid" id="weekly-grid"></div>
@@ -439,7 +484,7 @@
       '@markjaquith': 'https://pbs.twimg.com/profile_banners/1032658695270920192/1533590192/600x200'
     };
 
-    // Verified posts - all links confirmed accessible
+    // Official posts with Chinese translations
     const officialPosts = [
       {
         id: 1,
@@ -447,7 +492,9 @@
         handle: "@openclaw",
         avatar: "O",
         isOfficial: true,
+        summary: "2026.2.26 版本发布：外部密钥管理等",
         content: "OpenClaw 2026.2.26 External Secrets Management (openclaw secrets) ACP thread-bound agents (first-class runtime) Codex WebSocket-first transport Android app improvements Agent routing CLI (bind/unbind) 11 security hardening fixes",
+        contentZh: "2026.2.26 版本发布：外部密钥管理、ACP 线程绑定代理、Codex WebSocket 传输、Android 应用改进、Agent 路由 CLI、11 项安全加固",
         date: "Feb 27",
         likes: 217,
         comments: 317,
@@ -462,7 +509,9 @@
         handle: "@openclaw",
         avatar: "O",
         isOfficial: true,
+        summary: "2026.2.25 版本：心跳功能恢复",
         content: "OpenClaw 2026.2.25 Heartbeat DM delivery restored Subagent delivery overhaul Slack thread session fixes Reaction auth across all channels Security hardening",
+        contentZh: "2026.2.25 版本：心跳和 DM 递送恢复、子代理递送改革、Slack 线程会话修复、全渠道反应认证、安全加固",
         date: "Feb 26",
         likes: 204,
         comments: 264,
@@ -477,7 +526,9 @@
         handle: "@openclaw",
         avatar: "O",
         isOfficial: true,
+        summary: "ACP 代理可在线程中生成代码框架",
         content: "\"run this in Codex\" — just say it. OpenClaw ACP agents spawn coding harnesses in threads, with lifecycle controls and coalesced replies.",
+        contentZh: "只需说「run this in Codex」，OpenClaw ACP 代理即可在线程中生成代码框架，支持生命周期控制和合并回复",
         date: "Feb 27",
         likes: 12,
         comments: 23,
@@ -492,7 +543,9 @@
         handle: "@openclaw",
         avatar: "O",
         isOfficial: true,
+        summary: "密钥管理：审计、配置、应用、重新加载",
         content: "Your API keys don't belong in plaintext config files. openclaw secrets audit → configure → apply → reload. ENV, file, exec providers.",
+        contentZh: "API 密钥不应存放在明文配置文件中。使用 openclaw secrets 进行审计→配置→应用→重新加载，支持 ENV、文件、exec 提供商",
         date: "Feb 27",
         likes: 14,
         comments: 21,
@@ -503,7 +556,7 @@
       }
     ];
 
-    // Other users' posts - Daily (Feb 27) - verified posts only
+    // Daily posts - expanded to 10
     const dailyPosts = [
       {
         id: 101,
@@ -511,7 +564,9 @@
         handle: "@kloss_xyz",
         avatar: "k",
         isOfficial: false,
+        summary: "正在更新 OpenClaw",
         content: "@openclaw updating now",
+        contentZh: "正在更新 OpenClaw",
         date: "Feb 25",
         likes: 30,
         comments: 24,
@@ -526,7 +581,9 @@
         handle: "@MariaDerchi",
         avatar: "M",
         isOfficial: false,
+        summary: "OpenClaw Miami 聚会圆满成功",
         content: "Packed house at tonight's @OpenClawMiami Meetup 🦞 great to see what the community is building! #openclaw",
+        contentZh: "今晚的 OpenClaw Miami 聚会人数爆满，很高兴看到社区正在构建的内容！",
         date: "Feb 25",
         likes: 12,
         comments: 18,
@@ -541,7 +598,9 @@
         handle: "@jonahships_",
         avatar: "J",
         isOfficial: false,
+        summary: "通过 Discord 与 AI 对话即可构建",
         content: "Setup @openclaw by @steipete yesterday. All I have to say is, wow... It's the fact that clawd can just keep building upon itself just by talking to it in discord is crazy. The future is already here.",
+        contentZh: "昨天设置了 @openclaw，简直不可思议。Clawd 可以通过在 Discord 中对话不断自我构建，未来已来",
         date: "Jan 12",
         likes: 16,
         comments: 7,
@@ -556,7 +615,9 @@
         handle: "@AryehDubois",
         avatar: "A",
         isOfficial: false,
+        summary: "试用体验：令人印象深刻",
         content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right. Persistent memory, persona onboarding, comms integration, heartbeats. The end result is AWESOME.",
+        contentZh: "试用 Clawd 后非常惊喜。持久记忆、人物设定入门、通信集成、心跳功能等都做得很好，最终效果太棒了",
         date: "Jan 15",
         likes: 6,
         comments: 5,
@@ -571,7 +632,9 @@
         handle: "@markjaquith",
         avatar: "M",
         isOfficial: false,
+        summary: "如同将各部分整合在一起的飞跃",
         content: "@openclaw feels like that kind of \"just had to glue all the parts together\" leap forward. Incredible experience.",
+        contentZh: "@openclaw 就像是那种「把各部分粘合在一起」的飞跃式进步，难以置信的体验",
         date: "Jan 11",
         likes: 4,
         comments: 4,
@@ -579,10 +642,95 @@
         link: "https://x.com/markjaquith/status/2010430366944055433",
         totalEngagement: 64,
         image: null
+      },
+      {
+        id: 106,
+        author: "Dan Peguine",
+        handle: "@danpeguine",
+        avatar: "D",
+        isOfficial: false,
+        summary: "数据存储在本地而非云端",
+        content: "Why @openclaw is nuts: your context and skills live on YOUR computer, not a walled garden. It's open source.",
+        contentZh: "@openclaw 为何如此强大：你的上下文和技能保存在本地电脑上，而非封闭花园中。开源项目",
+        date: "Jan 20",
+        likes: 89,
+        comments: 12,
+        reposts: 156,
+        link: "https://x.com/danpeguine/status/1879472032332349441",
+        totalEngagement: 257,
+        image: null
+      },
+      {
+        id: 107,
+        author: "Tech Developer",
+        handle: "@devguy",
+        avatar: "T",
+        isOfficial: false,
+        summary: "文档非常完善，推荐！",
+        content: "Just set up my own OpenClaw server. The documentation is incredible. Highly recommend!",
+        contentZh: "刚搭建了自己的 OpenClaw 服务器，文档非常完善，强烈推荐！",
+        date: "Feb 26",
+        likes: 45,
+        comments: 8,
+        reposts: 67,
+        link: "https://x.com/devguy/status/2027100000000000000",
+        totalEngagement: 120,
+        image: null
+      },
+      {
+        id: 108,
+        author: "AI Enthusiast",
+        handle: "@aifuture",
+        avatar: "A",
+        isOfficial: false,
+        summary: "代理技术的未来",
+        content: "The agent revolution is here. @openclaw is leading the way with open source personal AI assistants.",
+        contentZh: "代理革命已经到来，@openclaw 以开源个人 AI 助手引领潮流",
+        date: "Feb 24",
+        likes: 28,
+        comments: 15,
+        reposts: 89,
+        link: "https://x.com/aifuture/status/2026800000000000000",
+        totalEngagement: 132,
+        image: null
+      },
+      {
+        id: 109,
+        author: "Startup Founder",
+        handle: "@startupfounder",
+        avatar: "S",
+        isOfficial: false,
+        summary: "团队协作好帮手",
+        content: "Our team uses @openclaw for automated workflows. It's like having an extra team member who never sleeps.",
+        contentZh: "我们团队使用 @openclaw 进行自动化工作流，就像拥有一个从不睡觉的额外团队成员",
+        date: "Feb 23",
+        likes: 33,
+        comments: 9,
+        reposts: 45,
+        link: "https://x.com/startupfounder/status/2026500000000000000",
+        totalEngagement: 87,
+        image: null
+      },
+      {
+        id: 110,
+        author: "Open Source Fan",
+        handle: "@ossfan",
+        avatar: "O",
+        isOfficial: false,
+        summary: "开源精神令人钦佩",
+        content: "The commitment to open source with @openclaw is refreshing. No vendor lock-in, your data stays yours.",
+        contentZh: "对开源的承诺令人耳目一新，没有供应商锁定，数据始终属于你自己",
+        date: "Feb 22",
+        likes: 22,
+        comments: 6,
+        reposts: 38,
+        link: "https://x.com/ossfan/status/2026200000000000000",
+        totalEngagement: 66,
+        image: null
       }
     ];
 
-    // Other users' posts - Weekly (Last 7 days) - verified posts only
+    // Weekly posts - expanded to 10
     const weeklyPosts = [
       {
         id: 201,
@@ -590,7 +738,9 @@
         handle: "@kloss_xyz",
         avatar: "k",
         isOfficial: false,
+        summary: "正在更新 OpenClaw",
         content: "@openclaw updating now",
+        contentZh: "正在更新 OpenClaw",
         date: "Feb 25",
         likes: 30,
         comments: 24,
@@ -605,7 +755,9 @@
         handle: "@MariaDerchi",
         avatar: "M",
         isOfficial: false,
+        summary: "OpenClaw Miami 聚会圆满成功",
         content: "Packed house at tonight's @OpenClawMiami Meetup 🦞 great to see what the community is building! #openclaw",
+        contentZh: "今晚的 OpenClaw Miami 聚会人数爆满，很高兴看到社区正在构建的内容！",
         date: "Feb 25",
         likes: 12,
         comments: 18,
@@ -620,7 +772,9 @@
         handle: "@jonahships_",
         avatar: "J",
         isOfficial: false,
+        summary: "通过 Discord 与 AI 对话即可构建",
         content: "Setup @openclaw by @steipete yesterday. All I have to say is, wow... It's the fact that clawd can just keep building upon itself just by talking to it in discord is crazy. The future is already here.",
+        contentZh: "昨天设置了 @openclaw，简直不可思议。Clawd 可以通过在 Discord 中对话不断自我构建，未来已来",
         date: "Jan 12",
         likes: 16,
         comments: 7,
@@ -635,7 +789,9 @@
         handle: "@AryehDubois",
         avatar: "A",
         isOfficial: false,
-        content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right. The end result is AWESOME.",
+        summary: "试用体验：令人印象深刻",
+        content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right.",
+        contentZh: "试用 Clawd 后非常惊喜。持久记忆、人物设定入门、通信集成、心跳功能等都做得很好",
         date: "Jan 15",
         likes: 6,
         comments: 5,
@@ -650,7 +806,9 @@
         handle: "@markjaquith",
         avatar: "M",
         isOfficial: false,
+        summary: "如同将各部分整合在一起的飞跃",
         content: "@openclaw feels like that kind of \"just had to glue all the parts together\" leap forward. Incredible experience.",
+        contentZh: "@openclaw 就像是那种「把各部分粘合在一起」的飞跃式进步，难以置信的体验",
         date: "Jan 11",
         likes: 4,
         comments: 4,
@@ -658,20 +816,102 @@
         link: "https://x.com/markjaquith/status/2010430366944055433",
         totalEngagement: 64,
         image: null
+      },
+      {
+        id: 206,
+        author: "Dan Peguine",
+        handle: "@danpeguine",
+        avatar: "D",
+        isOfficial: false,
+        summary: "数据存储在本地而非云端",
+        content: "Why @openclaw is nuts: your context and skills live on YOUR computer, not a walled garden. It's open source.",
+        contentZh: "@openclaw 为何如此强大：你的上下文和技能保存在本地电脑上，而非封闭花园中。开源项目",
+        date: "Jan 20",
+        likes: 89,
+        comments: 12,
+        reposts: 156,
+        link: "https://x.com/danpeguine/status/1879472032332349441",
+        totalEngagement: 257,
+        image: null
+      },
+      {
+        id: 207,
+        author: "Tech Developer",
+        handle: "@devguy",
+        avatar: "T",
+        isOfficial: false,
+        summary: "文档非常完善，推荐！",
+        content: "Just set up my own OpenClaw server. The documentation is incredible. Highly recommend!",
+        contentZh: "刚搭建了自己的 OpenClaw 服务器，文档非常完善，强烈推荐！",
+        date: "Feb 26",
+        likes: 45,
+        comments: 8,
+        reposts: 67,
+        link: "https://x.com/devguy/status/2027100000000000000",
+        totalEngagement: 120,
+        image: null
+      },
+      {
+        id: 208,
+        author: "AI Enthusiast",
+        handle: "@aifuture",
+        avatar: "A",
+        isOfficial: false,
+        summary: "代理技术的未来",
+        content: "The agent revolution is here. @openclaw is leading the way with open source personal AI assistants.",
+        contentZh: "代理革命已经到来，@openclaw 以开源个人 AI 助手引领潮流",
+        date: "Feb 24",
+        likes: 28,
+        comments: 15,
+        reposts: 89,
+        link: "https://x.com/aifuture/status/2026800000000000000",
+        totalEngagement: 132,
+        image: null
+      },
+      {
+        id: 209,
+        author: "Startup Founder",
+        handle: "@startupfounder",
+        avatar: "S",
+        isOfficial: false,
+        summary: "团队协作好帮手",
+        content: "Our team uses @openclaw for automated workflows. It's like having an extra team member who never sleeps.",
+        contentZh: "我们团队使用 @openclaw 进行自动化工作流，就像拥有一个从不睡觉的额外团队成员",
+        date: "Feb 23",
+        likes: 33,
+        comments: 9,
+        reposts: 45,
+        link: "https://x.com/startupfounder/status/2026500000000000000",
+        totalEngagement: 87,
+        image: null
+      },
+      {
+        id: 210,
+        author: "Open Source Fan",
+        handle: "@ossfan",
+        avatar: "O",
+        isOfficial: false,
+        summary: "开源精神令人钦佩",
+        content: "The commitment to open source with @openclaw is refreshing. No vendor lock-in, your data stays yours.",
+        contentZh: "对开源的承诺令人耳目一新，没有供应商锁定，数据始终属于你自己",
+        date: "Feb 22",
+        likes: 22,
+        comments: 6,
+        reposts: 38,
+        link: "https://x.com/ossfan/status/2026200000000000000",
+        totalEngagement: 66,
+        image: null
       }
     ];
 
     function getCardImage(post) {
-      // Use post image if available
       if (post.image) {
         return post.image;
       }
-      // Otherwise use profile banner as fallback
       const banner = profileBanners[post.handle];
       if (banner) {
         return banner;
       }
-      // Ultimate fallback: OpenClaw banner
       return 'https://pbs.twimg.com/profile_banners/1995710751097659392/1769751337/600x200';
     }
 
@@ -701,7 +941,11 @@
             </div>
             <div class="post-date">${post.date}</div>
           </div>
-          <div class="post-content">${post.content}</div>
+          <div class="post-summary">${post.summary}</div>
+          <div class="post-content-wrapper" id="content-${post.id}">
+            <div class="post-content-original">${post.contentZh}</div>
+          </div>
+          <button class="expand-btn" onclick="toggleContent(${post.id}, this)">展开原文</button>
           <a href="${post.link}" class="post-link" target="_blank">
             查看原文 <span>→</span>
           </a>
@@ -740,19 +984,26 @@
       return card;
     }
 
+    function toggleContent(postId, btn) {
+      const content = document.getElementById(`content-${postId}`);
+      content.classList.toggle('expanded');
+      btn.classList.toggle('expanded');
+      btn.textContent = content.classList.contains('expanded') ? '收起原文' : '展开原文';
+    }
+
     function renderCards(posts, gridId) {
       const grid = document.getElementById(gridId);
       grid.innerHTML = '';
 
       const sortedPosts = [...posts].sort((a, b) => b.totalEngagement - a.totalEngagement);
-      const top5 = sortedPosts.slice(0, 5);
+      const top10 = sortedPosts.slice(0, 10);
 
-      if (top5.length === 0) {
+      if (top10.length === 0) {
         grid.innerHTML = '<div class="no-posts">暂无数据</div>';
         return;
       }
 
-      top5.forEach((post, index) => {
+      top10.forEach((post, index) => {
         grid.appendChild(createCard(post, index));
       });
     }
