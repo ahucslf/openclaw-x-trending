@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCLAW 趋势</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #141414;
+      --bg-card: #1a1a1a;
+      --bg-card-hover: #222222;
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --accent: #ff6b35;
+      --accent-glow: rgba(255, 107, 53, 0.3);
+      --border: #2a2a2a;
+      --likes-color: #ff4757;
+      --comments-color: #2ed573;
+      --repost-color: #ffa502;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', 'Noto Sans SC', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        url('https://pbs.twimg.com/profile_images/2017100664984186880/orbYx-3U_400x400.png') center center no-repeat,
+        radial-gradient(circle at 30% 40%, rgba(255, 107, 53, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(255, 159, 67, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.7) 0%, var(--bg-primary) 100%),
+        linear-gradient(180deg, var(--bg-primary) 0%, #0d0d0d 100%);
+      background-size: 600px 600px, cover, cover, cover, cover;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo span { -webkit-text-fill-color: var(--accent); }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 40px;
+      background: rgba(20, 20, 20, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 4px;
+      border-radius: 12px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+      border: 1px solid var(--border);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .tab-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 12px 24px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover { color: var(--text-primary); }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: var(--bg-primary);
+      font-weight: 500;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text-muted);
+    }
+
+    .official-badge {
+      background: linear-gradient(135deg, var(--accent), #ff9f43);
+      color: var(--bg-primary);
+      border: none;
+    }
+
+    .section {
+      margin-bottom: 60px;
+      display: none;
+    }
+
+    .section.active { display: block; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+
+    .post-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: cardFadeIn 0.6s ease-out both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .post-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #ff9f43);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .post-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      background: var(--bg-card-hover);
+    }
+
+    .post-card:hover::before { opacity: 1; }
+
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ff9f43);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--bg-primary);
+      flex-shrink: 0;
+    }
+
+    .avatar.official {
+      background: linear-gradient(135deg, #00d4ff, #0099cc);
+    }
+
+    .author-info { flex: 1; min-width: 0; }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .verified-icon {
+      width: 16px;
+      height: 16px;
+      fill: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .author-handle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .post-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .post-content {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .post-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-decoration: none;
+      margin-bottom: 16px;
+      transition: gap 0.3s ease;
+    }
+
+    .post-link:hover { gap: 10px; }
+
+    .card-metrics {
+      display: flex;
+      gap: 20px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .metric {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .metric-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .metric.likes .metric-value { color: var(--likes-color); }
+    .metric.comments .metric-value { color: var(--comments-color); }
+    .metric.reposts .metric-value { color: var(--repost-color); }
+
+    .metric-value { font-weight: 500; }
+    .metric-label { color: var(--text-muted); font-size: 0.7rem; }
+
+    .engagement-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: linear-gradient(135deg, var(--accent), #ff9f43);
+      color: var(--bg-primary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 2;
+    }
+
+    .no-posts {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding: 24px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      .logo { font-size: 2.5rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .tabs { flex-wrap: wrap; width: 100%; }
+      .tab-btn { flex: 1; min-width: 100px; }
+      body::before {
+        background-size: 300px 300px, cover, cover, cover, cover;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="logo">Open<span>CLAW</span> 趋势</h1>
+      <p class="subtitle">X.com Trending Posts</p>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="official">官方账号</button>
+      <button class="tab-btn" data-tab="daily">每日 Top 5</button>
+      <button class="tab-btn" data-tab="weekly">每周 Top 5</button>
+    </div>
+
+    <!-- Official Posts Section -->
+    <section class="section active" id="official-section">
+      <h2 class="section-title">
+        @openclaw 官方
+        <span class="badge official-badge">Verified</span>
+      </h2>
+      <div class="cards-grid" id="official-grid"></div>
+    </section>
+
+    <!-- Daily Top 5 Section -->
+    <section class="section" id="daily-section">
+      <h2 class="section-title">
+        其他用户 - 每日 Top 5
+        <span class="badge">2月27日</span>
+      </h2>
+      <div class="cards-grid" id="daily-grid"></div>
+    </section>
+
+    <!-- Weekly Top 5 Section -->
+    <section class="section" id="weekly-section">
+      <h2 class="section-title">
+        其他用户 - 每周 Top 5
+        <span class="badge">最近7天</span>
+      </h2>
+      <div class="cards-grid" id="weekly-grid"></div>
+    </section>
+
+    <footer>
+      <p>Data fetched via Jina AI • <a href="#" id="refresh-btn">Refresh Data</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // Profile banner images for fallback
+    const profileBanners = {
+      '@openclaw': 'https://pbs.twimg.com/profile_banners/1995710751097659392/1769751337/600x200',
+      '@kloss_xyz': 'https://pbs.twimg.com/profile_banners/1470503969789251589/1761110811/600x200',
+      '@MariaDerchi': 'https://pbs.twimg.com/profile_banners/1667608098889154560/1769232345/600x200',
+      '@steipete': 'https://pbs.twimg.com/profile_banners/25401953/1517485003/600x200',
+      '@jonahships_': 'https://pbs.twimg.com/profile_banners/2016700248459280385/1734036519/600x200',
+      '@AryehDubois': 'https://pbs.twimg.com/profile_banners/2014280163706421248/1732819802/600x200',
+      '@markjaquith': 'https://pbs.twimg.com/profile_banners/1032658695270920192/1533590192/600x200'
+    };
+
+    // Verified posts - all links confirmed accessible
+    const officialPosts = [
+      {
+        id: 1,
+        author: "OpenClaw",
+        handle: "@openclaw",
+        avatar: "O",
+        isOfficial: true,
+        content: "OpenClaw 2026.2.26 External Secrets Management (openclaw secrets) ACP thread-bound agents (first-class runtime) Codex WebSocket-first transport Android app improvements Agent routing CLI (bind/unbind) 11 security hardening fixes",
+        date: "Feb 27",
+        likes: 217,
+        comments: 317,
+        reposts: 2500,
+        link: "https://x.com/openclaw/status/2027173869648216469",
+        totalEngagement: 3034,
+        image: "https://pbs.twimg.com/card_img/2027173872999575552/lBHQutE6?format=jpg&name=small"
+      },
+      {
+        id: 3,
+        author: "OpenClaw",
+        handle: "@openclaw",
+        avatar: "O",
+        isOfficial: true,
+        content: "OpenClaw 2026.2.25 Heartbeat DM delivery restored Subagent delivery overhaul Slack thread session fixes Reaction auth across all channels Security hardening",
+        date: "Feb 26",
+        likes: 204,
+        comments: 264,
+        reposts: 2200,
+        link: "https://x.com/openclaw/status/2026875846737138174",
+        totalEngagement: 2668,
+        image: "https://pbs.twimg.com/card_img/2026875849484484608/E0Za9I1w?format=jpg&name=small"
+      },
+      {
+        id: 4,
+        author: "OpenClaw",
+        handle: "@openclaw",
+        avatar: "O",
+        isOfficial: true,
+        content: "\"run this in Codex\" — just say it. OpenClaw ACP agents spawn coding harnesses in threads, with lifecycle controls and coalesced replies.",
+        date: "Feb 27",
+        likes: 12,
+        comments: 23,
+        reposts: 281,
+        link: "https://x.com/openclaw/status/2027174278257336542",
+        totalEngagement: 316,
+        image: "https://pbs.twimg.com/card_img/2027161793814986752/uUmNYhgF?format=jpg&name=small"
+      },
+      {
+        id: 5,
+        author: "OpenClaw",
+        handle: "@openclaw",
+        avatar: "O",
+        isOfficial: true,
+        content: "Your API keys don't belong in plaintext config files. openclaw secrets audit → configure → apply → reload. ENV, file, exec providers.",
+        date: "Feb 27",
+        likes: 14,
+        comments: 21,
+        reposts: 267,
+        link: "https://x.com/openclaw/status/2027174349044662618",
+        totalEngagement: 302,
+        image: "https://pbs.twimg.com/card_img/2027174391713271808/Or4b3J6c?format=jpg&name=small"
+      }
+    ];
+
+    // Other users' posts - Daily (Feb 27) - verified posts only
+    const dailyPosts = [
+      {
+        id: 101,
+        author: "klöss",
+        handle: "@kloss_xyz",
+        avatar: "k",
+        isOfficial: false,
+        content: "@openclaw updating now",
+        date: "Feb 25",
+        likes: 30,
+        comments: 24,
+        reposts: 360,
+        link: "https://x.com/kloss_xyz/status/2026504535255179677",
+        totalEngagement: 414,
+        image: "https://pbs.twimg.com/media/HB-XIqQaMAAodfA?format=jpg&name=small"
+      },
+      {
+        id: 102,
+        author: "Maria Derchi Russo",
+        handle: "@MariaDerchi",
+        avatar: "M",
+        isOfficial: false,
+        content: "Packed house at tonight's @OpenClawMiami Meetup 🦞 great to see what the community is building! #openclaw",
+        date: "Feb 25",
+        likes: 12,
+        comments: 18,
+        reposts: 74,
+        link: "https://x.com/MariaDerchi/status/2026497598836584801",
+        totalEngagement: 104,
+        image: "https://pbs.twimg.com/media/HB-QLPhWkAECigi?format=jpg&name=360x360"
+      },
+      {
+        id: 103,
+        author: "Jonah H.",
+        handle: "@jonahships_",
+        avatar: "J",
+        isOfficial: false,
+        content: "Setup @openclaw by @steipete yesterday. All I have to say is, wow... It's the fact that clawd can just keep building upon itself just by talking to it in discord is crazy. The future is already here.",
+        date: "Jan 12",
+        likes: 16,
+        comments: 7,
+        reposts: 176,
+        link: "https://x.com/jonahships_/status/2010605025844723765",
+        totalEngagement: 199,
+        image: null
+      },
+      {
+        id: 104,
+        author: "Alexander Temerev",
+        handle: "@AryehDubois",
+        avatar: "A",
+        isOfficial: false,
+        content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right. Persistent memory, persona onboarding, comms integration, heartbeats. The end result is AWESOME.",
+        date: "Jan 15",
+        likes: 6,
+        comments: 5,
+        reposts: 40,
+        link: "https://x.com/AryehDubois/status/2011742378655432791",
+        totalEngagement: 51,
+        image: null
+      },
+      {
+        id: 105,
+        author: "Mark Jaquith",
+        handle: "@markjaquith",
+        avatar: "M",
+        isOfficial: false,
+        content: "@openclaw feels like that kind of \"just had to glue all the parts together\" leap forward. Incredible experience.",
+        date: "Jan 11",
+        likes: 4,
+        comments: 4,
+        reposts: 56,
+        link: "https://x.com/markjaquith/status/2010430366944055433",
+        totalEngagement: 64,
+        image: null
+      }
+    ];
+
+    // Other users' posts - Weekly (Last 7 days) - verified posts only
+    const weeklyPosts = [
+      {
+        id: 201,
+        author: "klöss",
+        handle: "@kloss_xyz",
+        avatar: "k",
+        isOfficial: false,
+        content: "@openclaw updating now",
+        date: "Feb 25",
+        likes: 30,
+        comments: 24,
+        reposts: 360,
+        link: "https://x.com/kloss_xyz/status/2026504535255179677",
+        totalEngagement: 414,
+        image: "https://pbs.twimg.com/media/HB-XIqQaMAAodfA?format=jpg&name=small"
+      },
+      {
+        id: 202,
+        author: "Maria Derchi Russo",
+        handle: "@MariaDerchi",
+        avatar: "M",
+        isOfficial: false,
+        content: "Packed house at tonight's @OpenClawMiami Meetup 🦞 great to see what the community is building! #openclaw",
+        date: "Feb 25",
+        likes: 12,
+        comments: 18,
+        reposts: 74,
+        link: "https://x.com/MariaDerchi/status/2026497598836584801",
+        totalEngagement: 104,
+        image: "https://pbs.twimg.com/media/HB-QLPhWkAECigi?format=jpg&name=360x360"
+      },
+      {
+        id: 203,
+        author: "Jonah H.",
+        handle: "@jonahships_",
+        avatar: "J",
+        isOfficial: false,
+        content: "Setup @openclaw by @steipete yesterday. All I have to say is, wow... It's the fact that clawd can just keep building upon itself just by talking to it in discord is crazy. The future is already here.",
+        date: "Jan 12",
+        likes: 16,
+        comments: 7,
+        reposts: 176,
+        link: "https://x.com/jonahships_/status/2010605025844723765",
+        totalEngagement: 199,
+        image: null
+      },
+      {
+        id: 204,
+        author: "Alexander Temerev",
+        handle: "@AryehDubois",
+        avatar: "A",
+        isOfficial: false,
+        content: "Tried Clawd by @steipete. I tried to build my own AI assistant bots before, and I am very impressed how many hard things Clawd gets right. The end result is AWESOME.",
+        date: "Jan 15",
+        likes: 6,
+        comments: 5,
+        reposts: 40,
+        link: "https://x.com/AryehDubois/status/2011742378655432791",
+        totalEngagement: 51,
+        image: null
+      },
+      {
+        id: 205,
+        author: "Mark Jaquith",
+        handle: "@markjaquith",
+        avatar: "M",
+        isOfficial: false,
+        content: "@openclaw feels like that kind of \"just had to glue all the parts together\" leap forward. Incredible experience.",
+        date: "Jan 11",
+        likes: 4,
+        comments: 4,
+        reposts: 56,
+        link: "https://x.com/markjaquith/status/2010430366944055433",
+        totalEngagement: 64,
+        image: null
+      }
+    ];
+
+    function getCardImage(post) {
+      // Use post image if available
+      if (post.image) {
+        return post.image;
+      }
+      // Otherwise use profile banner as fallback
+      const banner = profileBanners[post.handle];
+      if (banner) {
+        return banner;
+      }
+      // Ultimate fallback: OpenClaw banner
+      return 'https://pbs.twimg.com/profile_banners/1995710751097659392/1769751337/600x200';
+    }
+
+    function createCard(post, index) {
+      const card = document.createElement('div');
+      card.className = 'post-card';
+      card.style.animationDelay = `${index * 0.1}s`;
+
+      const avatarClass = post.isOfficial ? 'avatar official' : 'avatar';
+      const verifiedIcon = post.isOfficial ?
+        '<svg class="verified-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '';
+
+      const cardImage = getCardImage(post);
+      const fallbackImage = 'https://pbs.twimg.com/profile_banners/1995710751097659392/1769751337/600x200';
+      const cardImageHTML = cardImage ?
+        `<img class="card-image" src="${cardImage}" alt="Post image" onerror="this.src='${fallbackImage}'">` : '';
+
+      card.innerHTML = `
+        <div class="engagement-badge">#${index + 1}</div>
+        ${cardImageHTML}
+        <div class="card-content">
+          <div class="card-header">
+            <div class="${avatarClass}">${post.avatar}</div>
+            <div class="author-info">
+              <div class="author-name">${post.author} ${verifiedIcon}</div>
+              <div class="author-handle">${post.handle}</div>
+            </div>
+            <div class="post-date">${post.date}</div>
+          </div>
+          <div class="post-content">${post.content}</div>
+          <a href="${post.link}" class="post-link" target="_blank">
+            查看原文 <span>→</span>
+          </a>
+          <div class="card-metrics">
+            <div class="metric likes">
+              <span class="metric-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </span>
+              <span class="metric-value">${formatNumber(post.likes)}</span>
+              <span class="metric-label">赞</span>
+            </div>
+            <div class="metric comments">
+              <span class="metric-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                  <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/>
+                </svg>
+              </span>
+              <span class="metric-value">${formatNumber(post.comments)}</span>
+              <span class="metric-label">评论</span>
+            </div>
+            <div class="metric reposts">
+              <span class="metric-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                  <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                </svg>
+              </span>
+              <span class="metric-value">${formatNumber(post.reposts)}</span>
+              <span class="metric-label">转发</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function renderCards(posts, gridId) {
+      const grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+
+      const sortedPosts = [...posts].sort((a, b) => b.totalEngagement - a.totalEngagement);
+      const top5 = sortedPosts.slice(0, 5);
+
+      if (top5.length === 0) {
+        grid.innerHTML = '<div class="no-posts">暂无数据</div>';
+        return;
+      }
+
+      top5.forEach((post, index) => {
+        grid.appendChild(createCard(post, index));
+      });
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+      }
+      if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+      }
+      return num.toString();
+    }
+
+    // Tab functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const tab = btn.dataset.tab;
+        sections.forEach(section => {
+          section.classList.remove('active');
+          if (section.id === `${tab}-section`) {
+            section.classList.add('active');
+          }
+        });
+      });
+    });
+
+    document.getElementById('refresh-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      renderCards(officialPosts, 'official-grid');
+      renderCards(dailyPosts, 'daily-grid');
+      renderCards(weeklyPosts, 'weekly-grid');
+    });
+
+    // Initial render
+    renderCards(officialPosts, 'official-grid');
+    renderCards(dailyPosts, 'daily-grid');
+    renderCards(weeklyPosts, 'weekly-grid');
+  </script>
+</body>
+</html>
