@@ -1,5 +1,7 @@
 # OpenCLAW X.com 趋势
 
+![OpenCLAW Banner](background.png)
+
 展示 X.com 上关于 OpenCLAW 的热门帖子网页。
 
 ## 功能特点
@@ -42,9 +44,9 @@
 
 ## 预览
 
-打开 `index.html` 即可预览效果。
+![OpenCLAW Preview](background.png)
 
-![OpenCLAW Trending](preview.png)
+打开 `index.html` 即可预览效果。
 
 ## License
 
