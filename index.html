@@ -369,6 +369,55 @@
       border-top: 1px solid var(--border);
     }
 
+    /* GitHub specific styles */
+    .github-card {
+      border-left: 3px solid #238636;
+    }
+
+    .repo-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .github-metrics {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .weekly-growth {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+    }
+
+    .weekly-growth.positive {
+      background: rgba(46, 160, 67, 0.2);
+      color: #3fb950;
+    }
+
+    .weekly-growth.negative {
+      background: rgba(248, 81, 73, 0.2);
+      color: #f85149;
+    }
+
+    .language-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .language-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
     .metric {
       display: flex;
       align-items: center;
@@ -448,6 +497,7 @@
       <button class="tab-btn active" data-tab="official">官方账号</button>
       <button class="tab-btn" data-tab="daily">每日 Top 10</button>
       <button class="tab-btn" data-tab="weekly">每周 Top 10</button>
+      <button class="tab-btn" data-tab="github">GitHub 仓库</button>
     </div>
 
     <!-- Official Posts Section -->
@@ -475,6 +525,15 @@
         <span class="badge">最近7天</span>
       </h2>
       <div class="cards-grid" id="weekly-grid"></div>
+    </section>
+
+    <!-- GitHub Section -->
+    <section class="section" id="github-section">
+      <h2 class="section-title">
+        GitHub 仓库
+        <span class="badge">按 Star 数排序</span>
+      </h2>
+      <div class="cards-grid" id="github-grid"></div>
     </section>
 
     <footer>
@@ -710,6 +769,150 @@
       }
     ];
 
+    // GitHub repos sorted by stars
+    const githubRepos = [
+      {
+        id: 1,
+        name: "openclaw/openclaw",
+        description: "Your own personal AI assistant. Any OS. Any Platform. The lobster way. 🦞",
+        descriptionZh: "你的个人 AI 助手。任何操作系统。任何平台。龙虾方式。",
+        stars: 242005,
+        forks: 46763,
+        language: "TypeScript",
+        languageColor: "#3178c6",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/openclaw",
+        weeklyStars: "+2.5k",
+        weeklyGrowth: true
+      },
+      {
+        id: 2,
+        name: "openclaw/clawhub",
+        description: "Skill Directory for OpenClaw",
+        descriptionZh: "OpenClaw 的技能目录",
+        stars: 3346,
+        forks: 660,
+        language: "TypeScript",
+        languageColor: "#3178c6",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/clawhub",
+        weeklyStars: "+180",
+        weeklyGrowth: true
+      },
+      {
+        id: 3,
+        name: "openclaw/skills",
+        description: "All versions of all skills that are on clawdhub.com archived",
+        descriptionZh: "clawdhub.com 上所有版本的技能归档",
+        stars: 1687,
+        forks: 554,
+        language: "Python",
+        languageColor: "#3572A5",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/skills",
+        weeklyStars: "+95",
+        weeklyGrowth: true
+      },
+      {
+        id: 4,
+        name: "openclaw/lobster",
+        description: "Openclaw-native workflow shell: typed, local-first macro engine",
+        descriptionZh: "Openclaw 原生工作流 shell：类型化、本地优先的宏引擎",
+        stars: 664,
+        forks: 168,
+        language: "TypeScript",
+        languageColor: "#3178c6",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/lobster",
+        weeklyStars: "+42",
+        weeklyGrowth: true
+      },
+      {
+        id: 5,
+        name: "openclaw/nix-openclaw",
+        description: "Packages OpenClaw for nix",
+        descriptionZh: "为 nix 打包的 OpenClaw",
+        stars: 466,
+        forks: 154,
+        language: "Nix",
+        languageColor: "#7e7eff",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/nix-openclaw",
+        weeklyStars: "+28",
+        weeklyGrowth: true
+      },
+      {
+        id: 6,
+        name: "openclaw/openclaw-ansible",
+        description: "Automated, hardened Clawdbot installation with Tailscale VPN",
+        descriptionZh: "使用 Tailscale VPN 的自动化强化 Clawdbot 安装",
+        stars: 436,
+        forks: 208,
+        language: "Shell",
+        languageColor: "#89e051",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/openclaw-ansible",
+        weeklyStars: "+21",
+        weeklyGrowth: true
+      },
+      {
+        id: 7,
+        name: "openclaw/openclaw.ai",
+        description: "Website of openclaw.ai",
+        descriptionZh: "openclaw.ai 网站",
+        stars: 198,
+        forks: 149,
+        language: "Astro",
+        languageColor: "#ff5a03",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/openclaw.ai",
+        weeklyStars: "+15",
+        weeklyGrowth: true
+      },
+      {
+        id: 8,
+        name: "openclaw/acpx",
+        description: "Headless CLI client for stateful Agent Client Protocol (ACP) sessions",
+        descriptionZh: "无状态 ACP 会话的头 CLI 客户端",
+        stars: 161,
+        forks: 22,
+        language: "TypeScript",
+        languageColor: "#3178c6",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/acpx",
+        weeklyStars: "+12",
+        weeklyGrowth: true
+      },
+      {
+        id: 9,
+        name: "openclaw/clawdinators",
+        description: "Declarative infra + NixOS modules for CLAWTINATOR hosts",
+        descriptionZh: "CLAWTINATOR 主机的声明式基础设施 + NixOS 模块",
+        stars: 121,
+        forks: 37,
+        language: "Nix",
+        languageColor: "#7e7eff",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/clawdinators",
+        weeklyStars: "+8",
+        weeklyGrowth: true
+      },
+      {
+        id: 10,
+        name: "openclaw/barnacle",
+        description: "Useful bot that sticks around... heh",
+        descriptionZh: "有用的机器人... 哈哈",
+        stars: 18,
+        forks: 30,
+        language: "TypeScript",
+        languageColor: "#3178c6",
+        avatar: "https://avatars.githubusercontent.com/u/252820863?v=4",
+        link: "https://github.com/openclaw/barnacle",
+        weeklyStars: "+2",
+        weeklyGrowth: true
+      }
+    ];
+
     function getCardImage(post) {
       if (post.image) {
         return post.image;
@@ -829,6 +1032,71 @@
       return num.toString();
     }
 
+    // GitHub card creation
+    function createGitHubCard(repo, index) {
+      const card = document.createElement('div');
+      card.className = 'post-card github-card';
+      card.style.animationDelay = `${index * 0.1}s`;
+
+      card.innerHTML = `
+        <div class="engagement-badge">#${index + 1}</div>
+        <div class="card-content">
+          <div class="card-header">
+            <img src="${repo.avatar}" alt="${repo.name}" class="repo-avatar">
+            <div class="author-info">
+              <div class="author-name">${repo.name}</div>
+              <div class="author-handle">${repo.language}</div>
+            </div>
+            <div class="post-date">
+              <span class="weekly-growth ${repo.weeklyGrowth ? 'positive' : 'negative'}">${repo.weeklyStars}</span>
+            </div>
+          </div>
+          <div class="post-summary">${repo.descriptionZh}</div>
+          <div class="github-metrics">
+            <div class="metric">
+              <span class="metric-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+              </span>
+              <span>${formatNumber(repo.stars)}</span>
+            </div>
+            <div class="metric">
+              <span class="metric-icon">
+                <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                  <path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z"/>
+                </svg>
+              </span>
+              <span>${formatNumber(repo.forks)}</span>
+            </div>
+            <div class="language-dot" style="background-color: ${repo.languageColor}"></div>
+            <span class="language-name">${repo.language}</span>
+          </div>
+          <a href="${repo.link}" class="post-link" target="_blank">
+            查看仓库 <span>→</span>
+          </a>
+        </div>
+      `;
+      return card;
+    }
+
+    function renderGitHubCards(repos, gridId) {
+      const grid = document.getElementById(gridId);
+      grid.innerHTML = '';
+
+      const sortedRepos = [...repos].sort((a, b) => b.stars - a.stars);
+      const top10 = sortedRepos.slice(0, 10);
+
+      if (top10.length === 0) {
+        grid.innerHTML = '<div class="no-posts">暂无数据</div>';
+        return;
+      }
+
+      top10.forEach((repo, index) => {
+        grid.appendChild(createGitHubCard(repo, index));
+      });
+    }
+
     // Tab functionality
     const tabBtns = document.querySelectorAll('.tab-btn');
     const sections = document.querySelectorAll('.section');
@@ -853,11 +1121,13 @@
       renderCards(officialPosts, 'official-grid');
       renderCards(dailyPosts, 'daily-grid');
       renderCards(weeklyPosts, 'weekly-grid');
+      renderGitHubCards(githubRepos, 'github-grid');
     });
 
     // Initial render
     renderCards(officialPosts, 'official-grid');
     renderCards(dailyPosts, 'daily-grid');
+    renderGitHubCards(githubRepos, 'github-grid');
     renderCards(weeklyPosts, 'weekly-grid');
   </script>
 </body>
